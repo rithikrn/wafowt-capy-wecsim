@@ -2,7 +2,7 @@
 
 An open-source, end-to-end, reproducible workflow for the reduced-order
 hydrodynamic modelling of an oscillating-water-column (OWC) integrated
-floating offshore wind turbine (FOWT) platform built on the NREL OC4
+floating offshore wind turbine (FOWT) platform built on the NLR OC4
 DeepCwind semisubmersible.
 
 The repository implements a clean four-stage pipeline:
@@ -690,7 +690,7 @@ A 2.6 % agreement with the NREL reference and 0.9 % with the experiment
 is typical for linear potential-flow models with a simplified mooring.
 
 The hydrodynamic coefficients of the baseline platform agree with the
-NREL OC4 reference data [6] to within 2.5 %, with residual differences
+NLR OC4 reference data [6] to within 2.5 %, with residual differences
 attributable primarily to pontoon omission and finite mesh resolution.
 
 ---
