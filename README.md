@@ -15,7 +15,7 @@ The pipeline has four stages, each living in its own top-level folder:
 |   3   | [BEMIO](https://wec-sim.github.io/WEC-Sim/dev/user/advanced_features.html#bemio) (MATLAB) [2] | `hydroData/`  | Radiation/excitation impulse response functions, state-space realisation; WEC-Sim HDF5 file   |
 |   4   | [WEC-Sim](https://wec-sim.github.io/WEC-Sim/) [3]                          | `wecsim/`     | Time-domain coupled simulation (free decay, regular waves, irregular waves)                    |
 
-![Four-stage workflow](docs/media/thesis_placeholders/fig_2_04_workflow_page.png)
+![Four-stage workflow](docs/media/images/capywecsimworkflowflowchart.png)
 *Four-stage computational workflow: geometry -> Capytaine BEM -> BEMIO ->
 WEC-Sim time-domain.*
 
@@ -289,10 +289,10 @@ The two case drivers compose the same helpers in `capytaine_call.py`:
 
 Both drivers expose command-line overrides; use `--help` for the list.
 
-![Capytaine mesh and lid](docs/media/thesis_placeholders/fig_2_07_capytaine_mesh_models_page.png)
-*Capytaine mesh: (left) wetted-surface mesh of the platform with OWC
+![Platform mesh with OWC](docs/media/images/capy_mesh.png) ![Capytaine wetted mesh with lid](docs/media/images/capy_mesh.png)
+*Capytaine mesh: (left) Platform mesh of the platform with OWC
 chambers modelled at each offset column; (right) lid mesh placed at the
-still water plane.*
+still water plane for the weeted platform.*
 
 ### 4.3 Stage 3 -- BEMIO post-processing
 
