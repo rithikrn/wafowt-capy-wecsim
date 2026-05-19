@@ -1,293 +1,473 @@
-# OWC-FOWT Hydro BEM/WEC-Sim Workflow
+# WAFOWT-CAPY-WECSIM
 
-An open-source reduced-order hydrodynamic workflow for an oscillating-water-column (OWC) integrated floating offshore wind turbine platform derived from the OC4 DeepCwind semisubmersible.
+An open-source, reproducible workflow for reduced-order hydrodynamic
+modelling of an oscillating-water-column (OWC) integrated floating
+offshore wind turbine platform, built around three established tools:
 
-This repository is organized for reproducibility and extension. It separates the **solid baseline/no-OWC case** from the **4 m hollow OWC case**, because their geometry files, Capytaine body definitions, hydrodynamic files, WEC-Sim input files, and Simulink models are not interchangeable.
+| Stage | Tool                                           | Role                                                                                   |
+| :---- | :--------------------------------------------- | :------------------------------------------------------------------------------------- |
+|   1   | Python + STL                                   | platform geometry generation and mesh export                                           |
+|   2   | [Capytaine](https://capytaine.org/) (Python)   | linear potential-flow BEM solve; outputs frequency-domain coefficients to NetCDF       |
+|   3   | [BEMIO](https://wec-sim.github.io/WEC-Sim/dev/user/advanced_features.html#bemio) (MATLAB) | post-processing of BEM data into a WEC-Sim-ready HDF5 file       |
+|   4   | [WEC-Sim](https://wec-sim.github.io/WEC-Sim/) (MATLAB + Simulink) | time-domain coupled simulation (decay, regular, irregular waves)        |
 
-![Four-stage workflow placeholder](docs/media/thesis_placeholders/fig_2_04_workflow_page.png)
+The host platform is the NREL OC4 DeepCwind semisubmersible
+[[Robertson et al., 2014]](https://www.nrel.gov/docs/fy14osti/60601.pdf)
+supporting the NREL 5 MW reference wind turbine. The repository ships
+two ready-to-run cases:
 
-## What this repository does
+| Case   | Description                                                      | Bodies                                                |
+| :----- | :--------------------------------------------------------------- | :---------------------------------------------------- |
+| base   | Solid (no-OWC) OC4 baseline                                      | 1 (platform, 6 DOF)                                   |
+| hollow | Three offset columns hollowed to form 4 m-diameter OWC chambers  | 4 (platform + 3 OWC piston bodies, 9 DOF total)       |
 
-The workflow converts platform geometry into time-domain WEC-Sim simulations through four stages:
+The base case is the reference; the hollow case shows how the same
+pipeline handles a coupled multi-body hydrodynamic problem.
 
-1. **Geometry and body definition**: the platform mesh, body order, centers of gravity, water depth, and wave-frequency grid are defined in Python.
-2. **Capytaine frequency-domain BEM**: Capytaine solves linear potential-flow radiation and diffraction problems and writes hydrodynamic coefficients to NetCDF.
-3. **BEMIO post-processing**: BEMIO reads the Capytaine NetCDF file, removes/cleans problematic frequencies, computes radiation and excitation impulse-response functions, fits radiation state-space models, and writes the WEC-Sim HDF5 hydrodynamic file.
-4. **WEC-Sim time-domain simulation**: WEC-Sim uses the HDF5 file, the Simulink model, and `wecSimInputFile.m` to simulate free decay, regular waves, or irregular waves.
+> **Scope.** This repository implements the *reduced-order* layer of the
+> workflow. The CFD layer (OpenFOAM RANS--VOF with 6-DoF) and the
+> passive-orifice study referenced in the accompanying paper are
+> separate; this repo is intentionally limited to Capytaine + BEMIO +
+> WEC-Sim so that the moving parts are easy to follow and easy to
+> reproduce on any laptop.
 
-The repository contains two ready-to-use cases:
+---
 
-| Case folder | Purpose | Hydrodynamic body model | WEC-Sim model |
-|---|---|---|---|
-| `cases/oc4_baseline_no_owc` | Solid baseline/reference case | One platform body | `oc4_baseline_no_owc_wecsim.slx` |
-| `cases/oc4_hollow_owc_4m` | 4 m hollow OWC case | Platform shell + 3 OWC piston bodies | `oc4_hollow_owc_4m_wecsim.slx` |
+## Repository layout
 
-## Why this matters
-
-The engineering question is not simply whether material can be removed from the offset columns. Hollowing changes mass, waterplane area, hydrostatic restoring, added mass, radiation damping, and rigid-body response. When the hollow columns are treated as OWC chambers, the internal water surfaces and trapped air volumes also introduce hydro-pneumatic dynamics. This repository is structured to make that coupled design problem transparent:
-
-- the baseline case gives the reference response;
-- the hollow case exposes how geometry and OWC piston bodies change the reduced-order hydrodynamics;
-- the WEC-Sim layer lets users compare free-decay, regular-wave, and irregular-wave response histories;
-- the passive OWC/PTO proxy lets users sweep chamber restriction by changing one parameter, `orificeDiameter`.
-
-## Repository tree
-
-```text
-owc-fowt-hydro-bem-wecsim/
-├── README.md
+```
+wafowt-capy-wecsim/
+├── README.md                         <- you are here
 ├── LICENSE
 ├── CITATION.cff
-├── requirements.txt
-├── environment.yml
-├── pyproject.toml
+├── environment.yml                   <- conda environment (recommended)
+├── requirements.txt                  <- pip-only alternative
 ├── .gitignore
-├── src/
-│   └── owc_fowt_hydro/
-│       ├── __init__.py
-│       └── capytaine_runner.py
-├── cases/
-│   ├── oc4_baseline_no_owc/
-│   │   ├── README.md
-│   │   ├── capytaine/
-│   │   │   └── run_capytaine_oc4_baseline_no_owc.py
-│   │   ├── bemio/
-│   │   │   └── bemio_oc4_baseline_no_owc.m
-│   │   ├── geometry/
-│   │   │   ├── oc4_semisubmersible_baseline_bem.stl
-│   │   │   └── oc4_semisubmersible_baseline_cg.stl
-│   │   ├── hydroData/
-│   │   │   ├── oc4_baseline_capytaine.nc
-│   │   │   └── oc4_baseline_wecsim.h5
-│   │   ├── oc4_baseline_no_owc_wecsim.slx
-│   │   ├── wecSimInputFile.m
-│   │   └── userDefinedFunctions.m
-│   └── oc4_hollow_owc_4m/
-│       ├── README.md
-│       ├── capytaine/
-│       │   └── run_capytaine_oc4_hollow_owc_4m.py
-│       ├── bemio/
-│       │   └── bemio_oc4_hollow_owc_4m.m
-│       ├── geometry/
-│       │   ├── oc4_hollow_owc_4m_bem.stl
-│       │   ├── oc4_hollow_owc_4m_cg.stl
-│       │   └── owc_piston_4m.stl
-│       ├── hydroData/
-│       │   ├── oc4_hollow_owc_4m_capytaine.nc
-│       │   └── oc4_hollow_owc_4m_wecsim.h5
-│       ├── oc4_hollow_owc_4m_wecsim.slx
-│       ├── wecSimInputFile.m
-│       └── userDefinedFunctions.m
+│
+├── capytaine/                        <- STAGE 2 driver scripts
+│   ├── capytaine_call.py             <- shared helpers (mesh, body, solver, export)
+│   ├── wafowt_capy_base.py           <- runs the baseline BEM solve
+│   └── wafowt_capy_hollow.py         <- runs the 4 m hollow OWC BEM solve
+│
+├── geometry/                         <- STAGE 1 outputs (surface meshes)
+│   ├── base.stl                      <- baseline OC4 wetted surface (CG-aligned)
+│   ├── hollow.stl                    <- 4 m hollow shell (CG-aligned)
+│   └── owc_piston_4m.stl             <- visualisation mesh for the OWC pistons
+│
+├── hydroData/                        <- STAGE 2 + STAGE 3 outputs
+│   ├── base/
+│   │   ├── bemio_base.m              <- BEMIO post-processor for base case
+│   │   ├── base.nc                   <- Capytaine output (created at stage 2)
+│   │   └── base.h5                   <- WEC-Sim hydro data (created at stage 3)
+│   └── hollow/
+│       ├── bemio_hollow.m            <- BEMIO post-processor for hollow case
+│       ├── hollow.nc                 <- Capytaine output (created at stage 2)
+│       └── hollow.h5                 <- WEC-Sim hydro data (created at stage 3)
+│
+├── wecsim/                           <- STAGE 4
+│   ├── wecSimInputFile.m             <- generic input file, switches on caseType
+│   ├── userDefinedFunctions.m        <- generic post-processor (plots, animation)
+│   ├── wafowt_base.slx               <- Simulink model for the baseline case
+│   └── wafowt_hollow.slx             <- Simulink model for the hollow OWC case
+│
 ├── docs/
-│   ├── CASE_TREE.md
-│   ├── FILE_AUDIT.md
-│   ├── METHOD_THEORY.md
-│   ├── PARAMETERS.md
-│   ├── ADD_BASE_GEOMETRY_CHECKLIST.md
-│   ├── OFFICIAL_DOC_REFERENCES.md
-│   └── media/
-│       ├── README.md
-│       ├── thesis_placeholders/
-│       └── videos/
+│   ├── images/                       <- workflow flowchart, mesh views, schematics
+│   └── videos/                       <- optional simulation animations
+│
 └── scripts/
-    └── check_repository.py
+    └── check_repository.py           <- pre-flight check that all expected files exist
 ```
 
-## Installation
+The four stages map directly onto four folders, so it is always clear
+where you are in the pipeline.
 
-### Python / Capytaine environment
+---
 
-Use Conda:
+## Quick start (TL;DR)
 
-```bash
-conda env create -f environment.yml
-conda activate owc-fowt-hydro
-```
+1. Install the Python environment (conda recommended):
 
-or a Python virtual environment:
+   ```bash
+   conda env create -f environment.yml
+   conda activate wafowt-capy-wecsim
+   ```
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+2. Sanity-check the repository:
 
-### MATLAB / WEC-Sim environment
+   ```bash
+   python scripts/check_repository.py
+   ```
 
-Install WEC-Sim and add it to the MATLAB path. Run each case from its case directory, not from the repository root:
+3. Run the BEM solve for whichever case you want:
+
+   ```bash
+   python capytaine/wafowt_capy_base.py        # base case
+   python capytaine/wafowt_capy_hollow.py      # 4 m hollow case
+   ```
+
+4. From MATLAB (with WEC-Sim on the path), build the WEC-Sim hydro file:
+
+   ```matlab
+   >> cd hydroData/base    ;  bemio_base
+   >> cd hydroData/hollow  ;  bemio_hollow
+   ```
+
+5. From MATLAB, run the simulation:
+
+   ```matlab
+   >> cd wecsim
+   >> edit wecSimInputFile.m         % set caseType = 'base' or 'hollow', pick wave block
+   >> wecSim
+   ```
+
+The post-processor saves figures to
+`wecsim/results/figures/<caseType>/<seaState>/`.
+
+---
+
+## Methodology, step by step
+
+### Stage 1 -- Geometry and mass properties
+
+The platform is a single rigid body (6 DOF) in the baseline case, and a
+four-body system in the hollow case (one platform shell plus three OWC
+piston bodies in heave). Geometry is represented by triangulated STL
+meshes co-located at the platform centre of gravity:
+
+- `geometry/base.stl`   -- baseline OC4 wetted surface
+- `geometry/hollow.stl` -- shell of the hollowed platform
+
+Mass and inertia properties, taken from the NREL OC4 specification and
+the hollow-column derivation in the accompanying paper, are hard-coded
+near the top of `wecsim/wecSimInputFile.m`:
+
+|                                       | Base                | Hollow 4 m          |
+| :------------------------------------ | :------------------ | :------------------ |
+| System mass, m\_sys [kg]              | 14 072 718          | 13 857 402          |
+| z\_CM,sys [m below SWL]               | -9.893              | -9.885              |
+| I\_xx = I\_yy [kg m^2]                | 1.3813e10           | 1.106e10            |
+| I\_zz [kg m^2]                        | 1.2287e10           | 1.157e10            |
+| Waterplane area A\_wp [m^2]           | 372.48              | 334.78              |
+| Heave stiffness C\_33 = ρgA\_wp [N/m] | 3 745 330           | 3 366 256           |
+
+The wind turbine masses (tower 249 718 kg, RNA 350 000 kg) are kept
+constant across both cases so the comparison isolates the effect of
+hollowing.
+
+### Stage 2 -- Capytaine BEM solve
+
+Capytaine solves the linear potential-flow radiation/diffraction problem
+over a frequency grid. The default settings (defined in
+`capytaine/capytaine_call.py`) are:
+
+- water density rho = 1025 kg/m³,
+- water depth h = 200 m (matches OC4),
+- angular frequency range omega in \[0.02, 3.0\] rad/s with 150 uniform points,
+- single head-sea direction beta = 0 rad,
+- automatic lid mesh at the still water line to suppress irregular frequencies.
+
+The case-specific drivers compose `capytaine_call.py`'s helpers into the
+right problem:
+
+- **`wafowt_capy_base.py`** -- loads `geometry/base.stl`, builds one
+  rigid body with 6 DOFs, solves, and exports
+  `hydroData/base/base.nc`.
+
+- **`wafowt_capy_hollow.py`** -- loads `geometry/hollow.stl`, builds the
+  platform shell as one rigid body and three heaving piston disks
+  (one per offset column, at the chamber centroids), sums them into a
+  multi-body system so Capytaine produces the full 9 x 9 added-mass and
+  radiation-damping matrices, and exports
+  `hydroData/hollow/hollow.nc`.
+
+The lid method places a flat mesh inside the floating body to suppress
+the standing-wave modes that pollute the BEM solution at irregular
+frequencies. Capytaine generates this automatically when
+`lid_faces_max_radius` is set in `build_rigid_body`.
+
+### Stage 3 -- BEMIO post-processing
+
+BEMIO (now bundled with WEC-Sim as MATLAB code, not the legacy Python
+`bemio`) reads the NetCDF file and produces the time-domain quantities
+WEC-Sim needs:
+
+- the **radiation impulse-response function (IRF)**, computed via the
+  cosine transform of the radiation damping with a 60 s convolution
+  interval and a 1.9 rad/s high-frequency cutoff,
+- a **state-space realisation** of that IRF for fast time-domain
+  evaluation,
+- the **excitation IRF** via inverse Fourier transform,
+- and the **hydrostatic data** (volume, CoB, CoG, stiffness matrix).
+
+Everything is packaged into a `.h5` file. The two driver scripts
+(`hydroData/base/bemio_base.m` and `hydroData/hollow/bemio_hollow.m`)
+are nearly identical; both use the BEMIO defaults that match the
+settings reported in the accompanying paper.
+
+For the multi-body hollow case, the resulting `hollow.h5` contains a
+(6×4)-by-(6×4) = 24×24 augmented coefficient block that WEC-Sim slices
+per-body using `simu.b2b = 1` (body-to-body interactions). This flag
+**must** be on for the hollow case and is set automatically by
+`wecSimInputFile.m`.
+
+### Stage 4 -- WEC-Sim time-domain simulation
+
+`wecsim/wecSimInputFile.m` switches between cases via a single flag at
+the top of the file:
 
 ```matlab
-cd cases/oc4_baseline_no_owc
-wecSim
+caseType = 'hollow';    % 'base'  or  'hollow'
 ```
 
-or
+When `caseType = 'base'`, the input file:
 
-```matlab
-cd cases/oc4_hollow_owc_4m
-wecSim
+- loads `wafowt_base.slx`,
+- declares a single body referencing `../hydroData/base/base.h5`,
+- sets the baseline mooring stiffness C\_33 = 3 745 330 N/m,
+- skips the OWC PTO block.
+
+When `caseType = 'hollow'`, the input file:
+
+- loads `wafowt_hollow.slx`,
+- declares one platform body plus three OWC piston bodies referencing
+  `../hydroData/hollow/hollow.h5`,
+- sets the hollow mooring stiffness C\_33 = 3 366 256 N/m,
+- defines three translational PTOs, each with:
+  - stiffness K\_wc = ρgA\_bore (the OWC water-column hydrostatic),
+  - damping derived from the standard quadratic-orifice mass-flow
+    relation linearised around steady oscillation:
+    ```
+            8 * rho_air * A_bore^3
+    c_pto = ----------------------
+              pi^2 * Cd^2 * d0^4
+    ```
+
+The orifice diameter `orificeDiameter` (= d0) is the principal passive
+control parameter. Changing this one number sweeps chamber restriction
+without touching anything else.
+
+A run produces, for body 1:
+
+- elevation and (if applicable) spectrum plots,
+- force and response plots in all 6 DOFs,
+- PTO power plots in the hollow case,
+- optional 3D Simscape Mechanics Explorer animation.
+
+`userDefinedFunctions.m` files them under
+`wecsim/results/figures/<caseType>/<seaState>/`.
+
+### Workflow diagram
+
+```
+   geometry/                                                 wecsim/
+   ┌──────────┐       capytaine/         hydroData/         ┌─────────────────┐
+   │ base.stl │──┐  ┌──────────────┐  ┌───────────────┐  ┌─>│ wafowt_base.slx │
+   │  hollow  │  │  │  capytaine_  │  │ bemio_base.m  │  │  └─────────────────┘
+   │   .stl   │──┼─>│   call.py +  │─>│ bemio_hollow  │──┤
+   └──────────┘  │  │  wafowt_capy │  │     .m        │  │  ┌─────────────────────┐
+                 │  │ _base/hollow │  │               │  └─>│ wafowt_hollow.slx   │
+                 │  └──────────────┘  └───────────────┘     └─────────────────────┘
+                 │         │                  │                       │
+                 │       .nc files          .h5 files                 │
+                 │                                                    │
+                 └────────────────────────────────────────────────────┘
+                                wecSimInputFile.m  +
+                                userDefinedFunctions.m
+                                       │
+                                       v
+                              results/figures/...
 ```
 
-WEC-Sim expects each case directory to contain the geometry folder, the hydrodynamic `.h5` file, `wecSimInputFile.m`, and the Simulink model.
+A higher-resolution version is in `docs/images/workflow_flowchart.png`.
 
-## Quick start
-
-Run the repository static check:
-
-```bash
-python scripts/check_repository.py
-```
-
-Run the baseline WEC-Sim case in MATLAB:
-
-```matlab
-cd cases/oc4_baseline_no_owc
-wecSim
-```
-
-Run the 4 m hollow OWC WEC-Sim case in MATLAB:
-
-```matlab
-cd cases/oc4_hollow_owc_4m
-wecSim
-```
-
-The included `userDefinedFunctions.m` files save optional figures to:
-
-```text
-cases/<case_name>/results/figures/
-```
-
-No user-specific Windows or cluster paths are required.
-
-## Full workflow: from geometry to WEC-Sim
-
-### Step 1 — Capytaine BEM solve
-
-Baseline:
-
-```bash
-python cases/oc4_baseline_no_owc/capytaine/run_capytaine_oc4_baseline_no_owc.py --overwrite
-```
-
-Hollow OWC:
-
-```bash
-python cases/oc4_hollow_owc_4m/capytaine/run_capytaine_oc4_hollow_owc_4m.py --overwrite
-```
-
-The Capytaine scripts define the frequency grid, water depth, density, wave heading, body order, and mesh files. The baseline script uses one body. The hollow script uses one platform shell plus three OWC piston bodies and generates the GDF piston meshes automatically.
-
-### Step 2 — BEMIO conversion
-
-Baseline:
-
-```matlab
-cd cases/oc4_baseline_no_owc/bemio
-bemio_oc4_baseline_no_owc
-```
-
-Hollow OWC:
-
-```matlab
-cd cases/oc4_hollow_owc_4m/bemio
-bemio_oc4_hollow_owc_4m
-```
-
-The BEMIO scripts use the same settings in both cases:
-
-| Quantity | Value |
-|---|---:|
-| Radiation IRF duration | 60 s |
-| High-frequency cutoff | 1.9 rad/s |
-| Excitation IRF points | 157 |
-| State-space radiation fit | enabled |
-
-### Step 3 — WEC-Sim time-domain simulation
-
-Each case has a dedicated `wecSimInputFile.m`. This is where the user selects no-wave decay, regular waves, or PM irregular waves. The most important WEC-Sim objects are:
-
-- `simulationClass`: simulation time, solver, ramp time, and Simulink model file;
-- `waveClass`: no-wave, regular, or irregular wave definition;
-- `bodyClass`: hydrodynamic body data and visualization geometry;
-- `constraintClass`: global reference constraint/joint;
-- `mooringClass`: linearized vertical restoring proxy;
-- `ptoClass`: only in the hollow OWC case, used as a passive OWC restriction proxy.
+---
 
 ## How the calculations connect physically
 
-### Capytaine outputs
+### Frequency-domain BEM coefficients (Capytaine)
 
-Capytaine computes frequency-dependent hydrodynamic coefficients for the body or body system:
+Capytaine returns, for each frequency omega:
 
-- added mass, `A(ω)`;
-- radiation damping, `B(ω)`;
-- excitation force, `X(ω)`;
-- hydrostatic restoring information.
+- the **added-mass** matrix `A(omega)`,
+- the **radiation damping** matrix `B(omega)`,
+- the **excitation force** vector `X(omega, beta)`,
+- the **hydrostatic stiffness** matrix `K_H`.
 
-For the baseline case, the hydrodynamic system is one platform body. For the hollow OWC case, the hydrodynamic system is a coupled multi-body problem: the platform shell plus three OWC piston bodies. This distinction is why the two cases need separate geometry, Capytaine drivers, hydrodynamic files, Simulink models, and WEC-Sim inputs.
+For the baseline case these matrices are 6 x 6. For the hollow case
+they are 9 x 9 because each OWC piston body adds one heave DOF
+(`platform (6 DOF) + 3 pistons (1 DOF each) = 9`).
 
-![Capytaine mesh placeholder](docs/media/thesis_placeholders/fig_2_07_capytaine_mesh_models_page.png)
+### Cummins equation (BEMIO -> WEC-Sim)
 
-### BEMIO outputs
+WEC-Sim integrates the Cummins time-domain equation per body:
 
-BEMIO converts the frequency-domain hydrodynamic data into the time-domain form needed by WEC-Sim. In practical terms, BEMIO is the bridge between the Capytaine `.nc` output and the WEC-Sim `.h5` hydrodynamic input. It computes radiation impulse-response functions, excitation impulse-response functions, and state-space radiation models.
-
-### WEC-Sim time-domain simulation
-
-WEC-Sim integrates the platform motion in time using the hydrodynamic data and the Simulink model. Free-decay simulations reveal natural periods and damping behavior. Regular waves test a single forcing period. Irregular PM waves distribute energy over multiple frequencies and are more useful for design-condition ranking.
-
-![WEC-Sim layout placeholder](docs/media/thesis_placeholders/fig_2_08_wecsim_layout_page.png)
-
-### OWC passive restriction proxy
-
-In the hollow OWC case, the three internal water columns are represented as piston bodies. The PTO elements placed at the chamber centroids approximate the restoring/damping effect of the OWC water column and the passive orifice restriction. Change this line in `cases/oc4_hollow_owc_4m/wecSimInputFile.m` to sweep passive restriction:
-
-```matlab
-orificeDiameter = 2.0;      % change to 0.25, 0.50, 1.00, or 2.00
+```
+( M + A_inf ) * eta_ddot(t)
+   + integral_0^t K_r(t - tau) * eta_dot(tau) dtau
+   + K_H * eta(t)
+   = F_exc(t) + F_visc(t) + F_moor(t) + F_PTO(t)
 ```
 
-The repository includes a placeholder figure from the thesis for interpreting pressure/water-level hysteresis loops:
+`A_inf` is the infinite-frequency added mass, `K_r` is the radiation
+IRF, and `eta` is the rigid-body displacement. BEMIO supplies the
+state-space realisation `(A_r, B_r, C_r, D_r)` so this convolution can
+be evaluated as an ODE rather than a quadrature.
 
-![Hysteresis loop placeholder](docs/media/thesis_placeholders/fig_4_09_hysteresis_loop_page.png)
+### OWC chamber dynamics (hollow case PTO)
 
-## Important case-specific warnings
+In the hollow case, each piston body's heave is the internal water
+surface in that chamber. The trapped air volume above the piston gives
+a pneumatic restoring force, and the orifice gives a pneumatic damping
+force. The WEC-Sim `ptoClass` represents both:
 
-1. Do not use the baseline Simulink model with the hollow OWC `wecSimInputFile.m`.
-2. Do not use the hollow OWC `.h5` file in the baseline case.
-3. Keep WEC-Sim body order synchronized with the Capytaine body order.
-4. If you regenerate Capytaine data, rerun BEMIO before WEC-Sim.
-5. If you add the exact missing baseline CG/lid geometry, follow `docs/ADD_BASE_GEOMETRY_CHECKLIST.md`.
+- `pto(k).stiffness = rho_w * g * A_bore`  -- water-column restoring
+- `pto(k).damping   = 8 rho_air A_bore^3 / (pi^2 * Cd^2 * d0^4)`
+  -- linearised orifice damping (passive restriction)
 
-## What was renamed from the uploaded files
+This is the simplest hydro-pneumatic proxy that preserves the qualitative
+behaviour of the orifice; for the full chamber-pressure dynamics and
+choked/unchoked transitions, use the CFD layer documented in the paper.
 
-| Uploaded / earlier name | GitHub-ready name |
-|---|---|
-| `fowt_med_MS_v2_withoutpto.py` | `cases/oc4_baseline_no_owc/capytaine/run_capytaine_oc4_baseline_no_owc.py` |
-| `02_12_owc_withoutpto_base.nc` | `cases/oc4_baseline_no_owc/hydroData/oc4_baseline_capytaine.nc` |
-| `02_12_owc_withoutpto_base_clean.h5` | `cases/oc4_baseline_no_owc/hydroData/oc4_baseline_wecsim.h5` |
-| `fowt_med_02_19.slx` | `cases/oc4_baseline_no_owc/oc4_baseline_no_owc_wecsim.slx` |
-| baseline `wecSimInputFile.m` | `cases/oc4_baseline_no_owc/wecSimInputFile.m` |
-| `fowt_med_MS_v2.py` | `cases/oc4_hollow_owc_4m/capytaine/run_capytaine_oc4_hollow_owc_4m.py` |
-| `02_19_owc_withcolumn_4m.nc` | `cases/oc4_hollow_owc_4m/hydroData/oc4_hollow_owc_4m_capytaine.nc` |
-| `02_19_owc_withcolumn_4m_clean.h5` | `cases/oc4_hollow_owc_4m/hydroData/oc4_hollow_owc_4m_wecsim.h5` |
-| `wafowt_nomoor_withowc.slx` | `cases/oc4_hollow_owc_4m/oc4_hollow_owc_4m_wecsim.slx` |
-| `capy_call2.py` | `src/owc_fowt_hydro/capytaine_runner.py` |
+---
 
-## Media placeholders
+## Reproducing the case studies
 
-The figures in `docs/media/thesis_placeholders/` are exported page-level placeholders from the thesis draft. Replace them with clean cropped figures before final GitHub release if desired. The `docs/media/videos/` folder contains a placeholder note for future WEC-Sim visualization or result-animation videos.
+### Free-decay tests
 
-## Official documentation references
+1. In `wecSimInputFile.m`:
+   ```matlab
+   waves = waveClass('noWaveCIC');
+   body(1).initial.displacement = [0, 0, 1.0];   % 1 m heave kick
+   ```
+2. Run `wecSim` from `wecsim/`.
 
-Only official tool documentation is cited in this repository:
+This is the verification case used to extract the heave natural period
+(17.96 s for the baseline, 18.27 s for the 4 m hollow case in the
+thesis).
 
-- Capytaine documentation: https://capytaine.org/stable/user_manual/quickstart.html
-- Capytaine NetCDF/export documentation: https://capytaine.org/stable/user_manual/export_output.html
-- WEC-Sim workflow documentation: https://wec-sim.github.io/WEC-Sim/dev/user/workflow.html
-- WEC-Sim code-structure documentation: https://wec-sim.github.io/WEC-Sim/dev/user/code_structure.html
-- WEC-Sim advanced features and BEMIO documentation: https://wec-sim.github.io/WEC-Sim/dev/user/advanced_features.html
+### Regular waves
+
+1. In `wecSimInputFile.m`, use the default regular block and set the
+   `waves.height` and `waves.period` to the target sea state.
+
+Recommended values (Robertson 2014):
+| Sea state | Hs [m] | Tp [s] |
+|:---------:|:------:|:------:|
+| SS2       | 0.67   | 4.8    |
+| SS3       | 2.44   | 8.1    |
+| SS4       | 5.49   | 11.3   |
+| SS5       | 10.0   | 13.6   |
+| SS6       | 10.5   | 14.3   |
+
+### Irregular Pierson-Moskowitz waves
+
+In `wecSimInputFile.m`, comment the regular block and uncomment the
+irregular block:
+
+```matlab
+waves = waveClass('irregular');
+waves.height       = 2.44;
+waves.period       = 8.1;
+waves.spectrumType = 'PM';
+waves.direction    = 0;
+waves.phaseSeed    = 1;     % for reproducible realisations
+```
+
+### Sweeping the OWC orifice diameter (hollow case only)
+
+Change one line in `wecSimInputFile.m`:
+
+```matlab
+orificeDiameter = 0.25;   %  e.g. 0.25, 0.50, 1.00, 2.00 m
+```
+
+The PTO damping `ptoCoefficient` is computed automatically.
+
+---
+
+## Important gotchas
+
+1. **Base hydrodynamic data is *not* interchangeable with the hollow
+   case.** The base case has 6 DOFs (1 body); the hollow case has 9 DOFs
+   (4 bodies). Always pair `base.h5` with `wafowt_base.slx` and
+   `hollow.h5` with `wafowt_hollow.slx`.
+
+2. **Body order in `wecSimInputFile.m` must match the body order in the
+   Capytaine driver.** For the hollow case this is:
+   `1 = shell, 2 = front piston, 3 = rear-port piston, 4 = rear-starboard piston`.
+   Swapping these silently produces wrong PTO and B2B couplings.
+
+3. **`simu.b2b = 1` must be on for the hollow case.** It is set
+   automatically by the supplied `wecSimInputFile.m`, but if you write
+   your own input file, remember.
+
+4. **Re-running stage 2 invalidates stage 3.** If you regenerate the
+   `.nc` file, re-run the corresponding `bemio_*.m` before invoking
+   WEC-Sim again.
+
+5. **STL meshes must be referenced at the body's CG** (this is a
+   WEC-Sim requirement, not a Capytaine one). The supplied meshes
+   already are.
+
+6. **Lid mesh resolution matters.** Capytaine's auto-lid uses
+   `lid_faces_max_radius = 1.0` by default in
+   `capytaine_call.build_rigid_body`. For finely panelled platform
+   meshes you may need to reduce this; for coarse meshes, increasing it
+   speeds up the solve. Iterate if the added-mass or excitation curves
+   show oscillatory artefacts near irregular frequencies.
+
+---
+
+## Verification snapshot
+
+A non-exhaustive comparison of the workflow's heave natural period
+against published OC4 results:
+
+| Source                                          | T_n,z [s]      | Method                            |
+| :---------------------------------------------- | :------------- | :-------------------------------- |
+| Robertson et al. 2014                           | 17.5           | WAMIT, moored                     |
+| Koo et al. 2014 (1:50 experiment)               | 17.8           | wave-basin                        |
+| OC5 phase II multi-code range                   | 17.0 -- 17.8   | multi-code comparison             |
+| **This workflow (Capytaine + BEMIO + WEC-Sim)** | **17.96**      | linearised mooring, base case     |
+
+A 2.6% agreement with the NREL reference and 0.9% with the experiment
+is typical for linear potential-flow models with a simplified mooring.
+Full verification tables for the 4 m hollow case appear in the paper.
+
+---
+
+## Citing
+
+If you use this workflow, please cite:
+
+- This repository (see `CITATION.cff`),
+- Ancellin & Dias, "Capytaine: a Python-based linear potential flow BEM
+  solver," Journal of Open Source Software, 2019,
+- The WEC-Sim publication appropriate to your version,
+- Robertson et al., "Definition of the Semisubmersible Floating System
+  for Phase II of OC4," NREL TP-5000-60601, 2014.
+
+---
+
+## Official documentation references used
+
+- Capytaine quickstart:  
+  https://capytaine.org/stable/user_manual/quickstart.html
+- Capytaine export:  
+  https://capytaine.org/stable/user_manual/export_output.html
+- Capytaine hydrostatics:  
+  https://capytaine.org/stable/user_manual/hydrostatics.html
+- WEC-Sim workflow:  
+  https://wec-sim.github.io/WEC-Sim/dev/user/workflow.html
+- WEC-Sim code structure:  
+  https://wec-sim.github.io/WEC-Sim/dev/user/code_structure.html
+- WEC-Sim advanced features (BEMIO, B2B, nonlinear hydro):  
+  https://wec-sim.github.io/WEC-Sim/dev/user/advanced_features.html
+
+---
 
 ## License
 
-See `LICENSE`. Verify that all geometry, hydrodynamic data, and Simulink models can be redistributed under the selected license before making the repository public.
+MIT. See `LICENSE`. Before redistributing modified geometry or hydro
+data, confirm that the upstream OC4 specification permits the
+particular use case.
