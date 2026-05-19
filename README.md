@@ -1,6 +1,6 @@
 # OWC-FOWT Hydro BEM/WEC-Sim Workflow
 
-A GitHub-ready, open-source reduced-order hydrodynamic workflow for an oscillating-water-column-integrated floating offshore wind turbine platform derived from the OC4 DeepCwind semisubmersible.
+An open-source reduced-order hydrodynamic workflow for an oscillating-water-column (OWC) integrated floating offshore wind turbine platform derived from the OC4 DeepCwind semisubmersible.
 
 This repository is organized for reproducibility and extension. It separates the **solid baseline/no-OWC case** from the **4 m hollow OWC case**, because their geometry files, Capytaine body definitions, hydrodynamic files, WEC-Sim input files, and Simulink models are not interchangeable.
 
