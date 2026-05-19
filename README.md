@@ -86,7 +86,7 @@ reduced-order layer to keep the moving parts small and inspectable.
 The four pipeline stages map one-to-one onto four top-level folders.
 The four-stage flowchart shows the dataflow:
 
-![Four-stage workflow flowchart](docs/media/workflow_flowchart.png)
+![Four-stage workflow flowchart](docs/media/images/capywecsimworkflowflowchart.png)
 *Four-stage computational workflow: geometry → Capytaine BEM → BEMIO →
 WEC-Sim time-domain.*
 
@@ -95,8 +95,8 @@ below. The OWC modification hollows each of the three offset columns
 into a vertical chamber open to the sea at the bottom and capped by a
 trapped air volume above:
 
-![Baseline OC4 DeepCwind platform](docs/media/oc4_baseline_platform.png)
-*Geometry of the baseline NREL OC4 DeepCwind semisubmersible platform
+![Baseline OC4 DeepCwind platform](docs/media/images/oc4_baseline_platform.png)
+*Geometry of the baseline NLR OC4 DeepCwind semisubmersible platform
 [6].*
 
 ![OWC integration concept](docs/media/owc_concept.png)
