@@ -289,11 +289,13 @@ The two case drivers compose the same helpers in `capytaine_call.py`:
 
 Both drivers expose command-line overrides; use `--help` for the list.
 
-![Platform mesh with OWC](docs/media/images/capy_mesh.png)![Capytaine wetted mesh with lid](docs/media/images/screenshot.png)
+![Platform mesh with OWC](docs/media/images/capy_mesh.png)
 
-*Capytaine mesh: (left) Platform mesh of the platform with OWC
-chambers modelled at each offset column; (right) lid mesh placed at the
-still water plane for the weeted platform.*
+*Platform mesh of the platform with OWC chambers modelled at each offset column*
+
+![Capytaine wetted mesh with lid](docs/media/images/screenshot.png)
+
+*Capytaine mesh with lid meshes placed at the still water plane for the weeted platform.*
 
 ### 4.3 Stage 3 -- BEMIO post-processing
 
