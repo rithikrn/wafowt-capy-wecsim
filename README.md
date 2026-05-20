@@ -1,10 +1,6 @@
 # WAFOWT-CAPY-WECSIM
 
-An open-source, end-to-end, reproducible workflow for the reduced-order
-hydrodynamic modelling of an oscillating-water-column (OWC) integrated
-floating offshore wind turbine (FOWT) platform built on the NLR OC4
-DeepCwind semisubmersible. The same workflow applies, with replaced
-geometry and mass values, to any semisubmersible platform.
+An open-source, end-to-end, reproducible workflow for the reduced-order hydrodynamic modelling of an oscillating-water-column (OWC) integrated floating offshore wind turbine (FOWT) platform built on the NLR OC4 DeepCwind semisubmersible. The same workflow applies, with replaced geometry and mass values, to any semisubmersible platform.
 
 The pipeline has four stages, each living in its own top-level folder:
 
@@ -16,11 +12,9 @@ The pipeline has four stages, each living in its own top-level folder:
 |   4   | [WEC-Sim](https://wec-sim.github.io/WEC-Sim/) [3]                          | `wecsim/`     | Time-domain coupled simulation (free decay, regular waves, irregular waves)                    |
 
 ![Four-stage workflow](docs/media/images/capywecsimworkflowflowchart.png)
-*Four-stage computational workflow: geometry -> Capytaine BEM -> BEMIO ->
-WEC-Sim time-domain.*
+*Four-stage computational workflow: geometry -> Capytaine BEM -> BEMIO -> WEC-Sim time-domain.*
 
-Two cases are provided, sharing one input file, one post-processor, and
-one set of Python helpers:
+Two cases are provided, sharing one input file, one post-processor, and one set of Python helpers:
 
 | Case   | Description                                | Bodies | DOF | Hydro data    | Simulink model        |
 | :----- | :----------------------------------------- | :----: | :-: | :------------ | :-------------------- |
@@ -82,8 +76,7 @@ wafowt-capy-wecsim/
 `-- docs/ 
 ```
 
-The pipeline order is recoverable from the folder names. Each folder
-is one stage. Check [CASE_TREE.md](docs/CASE_TREE.md) for detailed case tree with description
+The pipeline order is recoverable from the folder names. Each folder is one stage. Check [CASE_TREE.md](docs/CASE_TREE.md) for detailed case tree with description
 
 ---
 
@@ -98,16 +91,11 @@ Two independent toolchains are required.
 | Python    | 3.10 - 3.12 (Capytaine supports 3.8+)        | numpy, scipy, xarray, netCDF4, matplotlib, meshio, Capytaine     |
 | MATLAB    | R2020b or later (four latest releases tested by WEC-Sim) [4] | Simulink, Simscape, Simscape Multibody          |
 
-Both run on Windows, macOS, and Linux. A working `git` client is
-recommended; `git-lfs` is needed if you intend to clone WEC-Sim's
-bundled large `.h5` example files [4].
+Both run on Windows, macOS, and Linux. A working `git` client is recommended; `git-lfs` is needed if you intend to clone WEC-Sim's bundled large `.h5` example files [4].
 
 ### 2.2 Python and Capytaine
 
-Capytaine [1] is the linear potential-flow BEM solver used in stage 2.
-Two installation routes are supported. The conda-forge route is
-recommended because it ships precompiled wheels on all major platforms
-and resolves the Fortran/MKL dependencies automatically [5].
+Capytaine [1] is the linear potential-flow BEM solver used in stage 2. Two installation routes are supported. The conda-forge route is recommended because it ships precompiled wheels on all major platforms and resolves the Fortran/MKL dependencies automatically [5].
 
 **Conda (recommended).**
 
@@ -139,14 +127,11 @@ https://capytaine.org/stable/user_manual/installation.html [5].
 
 ### 2.3 MATLAB and WEC-Sim
 
-WEC-Sim [3] is the time-domain solver used in stage 4. Follow the
-official getting-started guide [4]:
+WEC-Sim [3] is the time-domain solver used in stage 4. Follow the official getting-started guide [4]:
 
-**Step 1.** In MATLAB, type `ver` and confirm that all four toolboxes
-listed in section 2.1 are present.
+**Step 1.** In MATLAB, type `ver` and confirm that all four toolboxes listed in section 2.1 are present.
 
-**Step 2.** Clone WEC-Sim (install Git LFS first so the example `.h5`
-files come down correctly) [4]:
+**Step 2.** Clone WEC-Sim (install Git LFS first so the example `.h5` files come down correctly) [4]:
 
 ```bash
 git lfs install
@@ -163,9 +148,7 @@ form is:
 >> addWecSimSource
 ```
 
-For a permanent install, copy `$WECSIM/source/addWecSimSource.m` into a
-`startup.m` file in your MATLAB start-up folder. Both options are
-documented in [4].
+For a permanent install, copy `$WECSIM/source/addWecSimSource.m` into a `startup.m` file in your MATLAB start-up folder. Both options are documented in [4].
 
 **Step 4.** Refresh the Simulink library browser:
 
@@ -173,8 +156,7 @@ documented in [4].
 >> slLibraryBrowser
 ```
 
-The WEC-Sim block library should appear. Library blocks are saved in
-R2020b format so newer MATLAB versions load them without complaint [4].
+The WEC-Sim block library should appear. Library blocks are saved in R2020b format so newer MATLAB versions load them without complaint [4].
 
 **Step 5.** Smoke-test the install with the WEC-Sim RM3 reference case:
 
@@ -187,18 +169,14 @@ A Mechanics Explorer window should open and figures should be produced.
 
 ### 2.4 BEMIO
 
-BEMIO ships **with** WEC-Sim as MATLAB code [2]; there is no separate
-install step. Once `$WECSIM/source` is on the MATLAB path (step 3
-above), functions like `readCAPYTAINE`, `radiationIRF`,
-`radiationIRFSS`, `excitationIRF`, `writeBEMIOH5`, and `plotBEMIO` are
-available globally. The legacy Python BEMIO is no longer supported [2].
+BEMIO ships **with** WEC-Sim as MATLAB code [2]; there is no separate install step. Once `$WECSIM/source` is on the MATLAB path (step 3
+above), functions like `readCAPYTAINE`, `radiationIRF`, `radiationIRFSS`, `excitationIRF`, `writeBEMIOH5`, and `plotBEMIO` are available globally. The legacy Python BEMIO is no longer supported [2].
 
 ---
 
 ## 3. Quick start
 
-After completing section 2, the full pipeline for either case is four
-commands.
+After completing section 2, the full pipeline for either case is four commands.
 
 **Baseline case.**
 
@@ -236,23 +214,13 @@ wecsim/results/figures/<caseType>/<seaState>/
 
 ### 4.1 Stage 1 -- Geometry and mass properties
 
-The host platform is the NLR OC4 DeepCwind semisubmersible [6]
-supporting the NLR 5 MW reference wind turbine [7]. Both cases share
-the OC4 reference. The hollow variant replaces each of the three
-offset columns with a vertical chamber open to the sea at the bottom and
-capped by a trapped air volume at the top.
+The host platform is the NLR OC4 DeepCwind semisubmersible [6], which supports the NLR 5 MW reference wind turbine [7]. Both cases share the OC4 reference. The hollow variant replaces each of the three offset columns with a vertical chamber open to the sea at the bottom and capped by a trapped air volume at the top.
 
-Wetted-surface meshes are triangulated STL co-located at the body's
-centre of gravity, as required by the WEC-Sim body class [8]. Mass and
-inertia values are hard-coded near the top of
-`wecsim/wecSimInputFile.m` and **must be replaced** when adapting the
-workflow to a different platform (section 8).
+Wetted-surface meshes are triangulated STL co-located at the body's centre of gravity, as required by the WEC-Sim body class [8]. Mass and inertia values are hard-coded near the top of `wecsim/wecSimInputFile.m` and **must be replaced** when adapting the workflow to a different platform (section 8).
 
 ### 4.2 Stage 2 -- Capytaine BEM solve
 
-Capytaine [1] solves the linear potential-flow radiation/diffraction
-problem over a frequency grid. Default settings (in
-`capytaine/capytaine_call.py`):
+Capytaine [1] solves the linear potential-flow radiation/diffraction problem over a frequency grid. Default settings (in `capytaine/capytaine_call.py`):
 
 | Parameter                  | Value                             |
 | :------------------------- | :-------------------------------- |
@@ -262,11 +230,8 @@ problem over a frequency grid. Default settings (in
 | Wave heading beta          | 0 rad (head seas)                 |
 | Lid mesh                   | Auto-generated at SWL             |
 
-The lid method [1] places a flat horizontal mesh inside the floating
-body at the still water line to suppress the irregular frequencies that
-otherwise pollute the BEM solution. Capytaine's
-`Mesh.generate_lid(faces_max_radius=...)` API is used; the default panel
-radius is 1.0 m.
+The lid method [1] places a flat horizontal mesh inside the floating body at the still water line to suppress the irregular frequencies that
+otherwise pollute the BEM solution. Capytaine's `Mesh.generate_lid(faces_max_radius=...)` API is used; the default panel radius is 1.0 m.
 
 The two case drivers compose the same helpers in `capytaine_call.py`:
 
@@ -488,7 +453,7 @@ experimental value is typical for linear potential-flow models with a
 simplified mooring proxy. Capytaine added mass, radiation damping, and
 excitation magnitudes agree with the NLR OC4 reference data [6] to
 within 2.5 %; residual differences are attributable to pontoon omission
-and finite mesh resolution.
+and finite mesh resolution.  These were omitted from the BEM panel mesh, viscous drag for those components is compensated for by adding Morison elements in WEC-Sim
 
 ---
 
