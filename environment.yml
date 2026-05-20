@@ -1,9 +1,13 @@
-name: owc-fowt-hydro
+name: wafowt-capy-wecsim
 channels:
   - conda-forge
 dependencies:
-  - python>=3.10
-  - numpy
-  - xarray
-  - netcdf4
+  - python>=3.10,<3.13
+  - pip
+  - numpy>=1.24
+  - scipy>=1.10
+  - xarray>=2023.1
+  - netCDF4
+  - matplotlib
+  - meshio
   - capytaine>=2.2
