@@ -1,62 +1,53 @@
-# File audit and editing decisions
+# File Audit and editing decisions
 
-This audit records how the uploaded files were interpreted and renamed.
+This audit records how the original, disparate script files utilized during the thesis research were interpreted, refactored, and consolidated into the current clean, 4-stage reproducible pipeline.
 
-## Baseline files added in this revision
+## 1. Capytaine BEM Scripts (Stage 2)
 
-### `fowt_med_MS_v2_withoutpto.py`
+### Original Baseline Script 
+* **Interpretation:** The baseline FOWT solver script without OWC chambers and without PTO dynamics. Only one center of gravity is active, and OWC water-column generation is commented out.
+* **Repository Action:**
+  * Renamed and moved to `capytaine/wafowt_capy_base.py`.
+  * Abstracted the repetitive Capytaine solver routines (mesh generation, lid application, and solver setup) into a single shared helper module: `capytaine/capytaine_call.py`.
+  * Hardcoded the output path to drop the NetCDF file directly into `hydroData/base/base.nc`.
+  * Maintained strictly as a 1-body, 6-DOF system.
 
-Interpretation: baseline FOWT without OWC and without PTO. Evidence in the original file:
+### Original Hollow Script
+* **Interpretation:** The multi-body OWC model representing the hollowed platform shell plus three internal OWC piston bodies. 
+* **Repository Action:**
+  * Renamed to `capytaine/wafowt_capy_hollow.py`.
+  * Refactored to utilize the same `capytaine_call.py` helpers.
+  * Ensures a 4-body, 9-DOF coupled radiation/diffraction solve, outputting to `hydroData/hollow/hollow.nc`.
 
-- the file comment states that it is for the FOWT without OWC and PTO;
-- only one center of gravity is active;
-- OWC water-column body generation is commented out;
-- the active body name is `FOWT_base`;
-- the output NetCDF name is the baseline no-PTO file.
+## 2. WEC-Sim Configuration (Stage 4)
 
-Repository action:
+### `wecSimInputFile.m`
+* **Interpretation:** Originally, separate input files existed for the baseline and hollow cases, leading to duplicate wave and simulation parameter definitions. 
+* **Repository Action:**
+  * **Consolidated** into a single, unified `wecsim/wecSimInputFile.m`.
+  * Introduced a programmatic `caseType = 'base'` or `'hollow'` switch at the top of the file. This switch dynamically controls which `.h5` hydrodynamic file is loaded, which `.slx` Simulink model is called, and whether multi-body dynamics (`simu.b2b = 1`) and PTO blocks are initialized.
+  * Standardized geometry references to point cleanly to `../geometry/base.stl` and `../geometry/hollow.stl`.
+  * Set `simu.explorer = 'off'` as the default for non-interactive batch reproducibility, though it can easily be toggled on.
 
-- renamed to `cases/oc4_baseline_no_owc/capytaine/run_capytaine_oc4_baseline_no_owc.py`;
-- replaced `import capy_call2 as cc` with the reusable package runner `owc_fowt_hydro.capytaine_runner`;
-- removed unused/debug imports;
-- changed output path to `hydroData/oc4_baseline_capytaine.nc`;
-- kept one hydrodynamic body only.
+### Binary Simulink Files (`.slx`)
+* **Interpretation:** The core block-diagram physics models for WEC-Sim. 
+* **Repository Action:**
+  * Renamed for clear discoverability to `wafowt_base.slx` (single body) and `wafowt_hollow.slx` (multi-body with translational PTOs). 
+  * Their binary block structures were not fundamentally modified; any internal parameter changes should be driven by the `wecSimInputFile.m` workspace variables.
 
-### `wecSimInputFile.m` for baseline
-
-Interpretation: baseline WEC-Sim setup, single platform body, no active PTO.
-
-Repository action:
-
-- retained the one-body structure;
-- renamed the model reference to `oc4_baseline_no_owc_wecsim.slx`;
-- renamed the hydrodynamic file reference to `hydroData/oc4_baseline_wecsim.h5`;
-- moved the geometry reference to `geometry/oc4_semisubmersible_baseline_cg.stl`;
-- set `simu.explorer = 'off'` for non-interactive reproducibility;
-- kept the no-wave decay default, with commented regular and PM irregular options.
+## 3. Post-Processing Scripts
 
 ### `userDefinedFunctions.m`
+* **Interpretation:** Optional WEC-Sim post-processing script that historically contained a hard-coded local Windows save path (e.g., `C:\Users\...`).
+* **Repository Action:**
+  * Removed the user-specific, hard-coded path.
+  * Implemented dynamic folder generation: results and plots are now automatically saved to `results/figures/<caseType>/<seaState>/` directly within the `wecsim/` directory.
+  * Wrapped plotting functions in `try/catch` blocks so that missing variables (e.g., trying to plot PTO power on the base case, or wave spectrums on a regular wave) do not crash the post-processing execution.
 
-Interpretation: optional WEC-Sim post-processing with a hard-coded local Windows save path.
+## 4. Geometry & Hydrodynamic Data
 
-Repository action:
+### STL Meshes
+* **Repository Action:** Renamed verbose original files (e.g., `oc4_semisubmersible_baseline_cg.stl`) to simplified, explicit names (`base.stl`, `hollow.stl`, `owc.stl`) housed inside the `geometry/` folder.
 
-- removed the user-specific path;
-- created `results/figures/` automatically under the active case directory;
-- wrapped plotting calls in `try/catch` so regular, irregular, and no-wave cases do not fail just because a plot type is unavailable;
-- kept visualization export disabled by default because it can be slow.
-
-### `.h5` and `.nc` files
-
-Repository action:
-
-- copied and renamed only;
-- did not parse, edit, or regenerate their internal contents.
-
-## Hollow case retained from previous cleanup
-
-The hollow case remains the multi-body OWC model: one hollow platform shell plus three OWC piston bodies. Its Capytaine, BEMIO, WEC-Sim, geometry, and hydroData files were renamed to match the new repository naming convention.
-
-## Binary Simulink files
-
-The `.slx` files were copied and renamed for discoverability. Their binary contents were not modified. Any block-level changes should be made directly in MATLAB/Simulink.
+### BEMIO Post-processors (`.m`, `.nc`, `.h5`)
+* **Repository Action:** Split the BEMIO scripts cleanly into `hydroData/base/bemio_base.m` and `hydroData/hollow/bemio_hollow.m` to prevent accidental cross-contamination of the `.h5` outputs.
