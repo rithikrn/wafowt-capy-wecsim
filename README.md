@@ -595,7 +595,7 @@ geometry [6] -- together with the repository itself:
 
 ```bibtex
 @software{wafowt_capy_wecsim,
-  author  = {Rithik Nambiar},
+  author  = {Rithik R Nambiar},
   title   = {{WAFOWT-CAPY-WECSIM}: Open-source Capytaine + BEMIO + WEC-Sim
              workflow for an OWC-integrated OC4 DeepCwind semisubmersible},
   year    = 2026,
