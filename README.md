@@ -52,44 +52,38 @@ one set of Python helpers:
 wafowt-capy-wecsim/
 |-- README.md
 |-- LICENSE
-|-- environment.yml                  conda environment (recommended)
-|-- requirements.txt                 pip alternative
+|-- environment.yml                  
+|-- requirements.txt                 
 |-- .gitignore
 |
-|-- capytaine/                       STAGE 2: Python BEM drivers
-|   |-- capytaine_call.py            shared helpers (mesh, body, solver, export)
-|   |-- wafowt_capy_base.py          baseline driver (1 body, 6 DOF)
-|   `-- wafowt_capy_hollow.py        hollow driver  (4 bodies, 9 DOF)
+|-- capytaine/                       
+|   |-- capytaine_call.py            
+|   |-- wafowt_capy_base.py          
+|   `-- wafowt_capy_hollow.py        
 |
-|-- geometry/                        STAGE 1: surface meshes
-|   |-- base.stl                     baseline OC4 wetted surface (CG-aligned)
-|   |-- hollow.stl                   hollow shell                (CG-aligned)
-|   `-- owc_piston.stl               OWC piston visualisation mesh
+|-- geometry/                        
+|   |-- base.stl                     
+|   |-- hollow.stl                   
+|   |-- owc.stl                      
+|   `-- lid.gdf                      
 |
-|-- hydroData/                       STAGE 2 outputs + STAGE 3 scripts/outputs
+|-- hydroData/                       
 |   |-- base/
-|   |   |-- bemio_base.m             BEMIO post-processor
-|   |   |-- base.nc                  Capytaine output    (created by stage 2)
-|   |   `-- base.h5                  WEC-Sim hydro data  (created by stage 3)
+|   |   `-- bemio_base.m                                
 |   `-- hollow/
 |       |-- bemio_hollow.m
-|       |-- hollow.nc
-|       `-- hollow.h5
 |
-|-- wecsim/                          STAGE 4: time-domain simulation
-|   |-- wecSimInputFile.m            generic input file, switches on caseType
-|   |-- userDefinedFunctions.m       generic post-processor
-|   |-- base.slx                     baseline Simulink model
-|   `-- hollow.slx                   hollow with OWC Simulink model
+|-- wecsim/                          
+|   |-- wecSimInputFile.m            
+|   |-- userDefinedFunctions.m       
+|   |-- wafowt_base.slx              
+|   `-- wafowt_hollow.slx            
 |
-`-- docs/
-    `-- media/
-        |-- images/                  figures used in this README
-        `-- videos/                  simulation animations (optional)
+`-- docs/ 
 ```
 
 The pipeline order is recoverable from the folder names. Each folder
-is one stage.
+is one stage. Check ![CASE_TREE.md](docs/CASE_TREE.md) for detailed case tree with description
 
 ---
 
