@@ -64,7 +64,7 @@ wafowt-capy-wecsim/
 |-- geometry/                        STAGE 1: surface meshes
 |   |-- base.stl                     baseline OC4 wetted surface (CG-aligned)
 |   |-- hollow.stl                   hollow shell                (CG-aligned)
-|   `-- owc_piston_4m.stl            OWC piston visualisation mesh
+|   `-- owc_piston.stl               OWC piston visualisation mesh
 |
 |-- hydroData/                       STAGE 2 outputs + STAGE 3 scripts/outputs
 |   |-- base/
@@ -79,12 +79,12 @@ wafowt-capy-wecsim/
 |-- wecsim/                          STAGE 4: time-domain simulation
 |   |-- wecSimInputFile.m            generic input file, switches on caseType
 |   |-- userDefinedFunctions.m       generic post-processor
-|   |-- wafowt_base.slx              baseline Simulink model
-|   `-- wafowt_hollow.slx            hollow OWC Simulink model
+|   |-- base.slx                     baseline Simulink model
+|   `-- hollow.slx                   hollow with OWC Simulink model
 |
 `-- docs/
     `-- media/
-        |-- thesis_placeholders/     figures used in this README
+        |-- images/                  figures used in this README
         `-- videos/                  simulation animations (optional)
 ```
 
