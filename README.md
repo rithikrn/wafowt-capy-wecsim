@@ -477,9 +477,10 @@ recommended for any quantitative comparison [3].
 ---
 
 ## 7. Verification
+![WEC-Sim Regular Wave Simulation](docs/media/videos/fowt_regwave_matlab.gif)
+*Visual verification: Time-domain regular wave simulation of the OWC-integrated platform in WEC-Sim.*
 
-Heave natural period of the baseline case compared with published OC4
-results:
+Heave natural period of the baseline case compared with published OC4 results:
 
 | Source                                          | T_n,z [s]      | Method                            |
 | :---------------------------------------------- | :------------- | :-------------------------------- |
