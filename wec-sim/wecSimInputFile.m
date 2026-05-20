@@ -8,7 +8,7 @@ switch lower(caseType)
     case 'hollow', simu.simMechanicsFile = 'wafowt_hollow.slx';
 end
 simu.mode      = 'normal';
-simu.explorer  = 'on';
+simu.explorer  = 'off';
 simu.startTime = 0;
 simu.rampTime  = 50;
 simu.endTime   = 500;
