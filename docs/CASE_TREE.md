@@ -1,36 +1,43 @@
 # Case tree and purpose
 
 ```text
-cases/
-├── oc4_baseline_no_owc/
-│   ├── capytaine/
-│   │   └── run_capytaine_oc4_baseline_no_owc.py
-│   ├── bemio/
-│   │   └── bemio_oc4_baseline_no_owc.m
-│   ├── geometry/
-│   │   ├── oc4_semisubmersible_baseline_bem.stl
-│   │   └── oc4_semisubmersible_baseline_cg.stl
-│   ├── hydroData/
-│   │   ├── oc4_baseline_capytaine.nc
-│   │   └── oc4_baseline_wecsim.h5
-│   ├── oc4_baseline_no_owc_wecsim.slx
-│   ├── wecSimInputFile.m
-│   └── userDefinedFunctions.m
-└── oc4_hollow_owc_4m/
-    ├── capytaine/
-    │   └── run_capytaine_oc4_hollow_owc_4m.py
-    ├── bemio/
-    │   └── bemio_oc4_hollow_owc_4m.m
-    ├── geometry/
-    │   ├── oc4_hollow_owc_4m_bem.stl
-    │   ├── oc4_hollow_owc_4m_cg.stl
-    │   └── owc_piston_4m.stl
-    ├── hydroData/
-    │   ├── oc4_hollow_owc_4m_capytaine.nc
-    │   └── oc4_hollow_owc_4m_wecsim.h5
-    ├── oc4_hollow_owc_4m_wecsim.slx
-    ├── wecSimInputFile.m
-    └── userDefinedFunctions.m
+wafowt-capy-wecsim/
+|-- README.md
+|-- LICENSE
+|-- environment.yml                  conda environment (recommended)
+|-- requirements.txt                 pip alternative
+|-- .gitignore
+|
+|-- capytaine/                       STAGE 2: Python BEM drivers
+|   |-- capytaine_call.py            shared helpers (mesh, body, solver, export)
+|   |-- wafowt_capy_base.py          baseline driver (1 body, 6 DOF)
+|   `-- wafowt_capy_hollow.py        hollow driver  (4 bodies, 9 DOF)
+|
+|-- geometry/                        STAGE 1: surface meshes
+|   |-- base.stl                     baseline OC4 wetted surface (CG-aligned)
+|   |-- hollow.stl                   hollow shell                (CG-aligned)
+|   `-- owc_piston.stl               OWC piston visualisation mesh
+|
+|-- hydroData/                       STAGE 2 outputs + STAGE 3 scripts/outputs
+|   |-- base/
+|   |   |-- bemio_base.m             BEMIO post-processor
+|   |   |-- base.nc                  Capytaine output    (created by stage 2)
+|   |   `-- base.h5                  WEC-Sim hydro data  (created by stage 3)
+|   `-- hollow/
+|       |-- bemio_hollow.m
+|       |-- hollow.nc
+|       `-- hollow.h5
+|
+|-- wecsim/                          STAGE 4: time-domain simulation
+|   |-- wecSimInputFile.m            generic input file, switches on caseType
+|   |-- userDefinedFunctions.m       generic post-processor
+|   |-- base.slx                     baseline Simulink model
+|   `-- hollow.slx                   hollow with OWC Simulink model
+|
+`-- docs/
+    `-- media/
+        |-- images/                  figures used in this README
+        `-- videos/                  simulation animations 
 ```
 
 ## Baseline case
