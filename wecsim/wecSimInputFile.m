@@ -15,8 +15,8 @@ water_depth    = 200;     % [m]
 
 % --- Body 1: Platform Properties ---
 platform_mass  = 14,072,718;                       % full system mass (platform+tower+RNA)[kg]
-platform_I     = [1.106e10, 1.106e10, 1.173e10]; % [kg-m^2]
-platform_disp  = [0, 0, 0.2];                    % Initial displacement [m]
+platform_I     = [1.106e10, 1.106e10, 1.173e10];   % [kg-m^2]
+platform_disp  = [0, 0, 0.2];                      % Initial displacement [m]
 
 % --- Body 2-4: OWC/PTO Properties ---
 pto_mass       = 'equilibrium';                  % usually 'equilibrium'
