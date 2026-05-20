@@ -16,7 +16,8 @@ wafowt-capy-wecsim/
 |-- geometry/                        STAGE 1: surface meshes
 |   |-- base.stl                     baseline OC4 wetted surface (CG-aligned)
 |   |-- hollow.stl                   hollow shell                (CG-aligned)
-|   `-- owc_piston.stl               OWC piston visualisation mesh
+|   |-- owc.stl                      OWC piston visualisation mesh
+|   `-- lid.gdf                      Lid mesh for suppressing irregular frequencies
 |
 |-- hydroData/                       STAGE 2 outputs + STAGE 3 scripts/outputs
 |   |-- base/
@@ -31,13 +32,19 @@ wafowt-capy-wecsim/
 |-- wecsim/                          STAGE 4: time-domain simulation
 |   |-- wecSimInputFile.m            generic input file, switches on caseType
 |   |-- userDefinedFunctions.m       generic post-processor
-|   |-- base.slx                     baseline Simulink model
-|   `-- hollow.slx                   hollow with OWC Simulink model
+|   |-- wafowt_base.slx              baseline Simulink model
+|   `-- wafowt_hollow.slx            hollow with OWC Simulink model
 |
-`-- docs/
+`-- docs/                            Additional Detailed Documentation
+    |-- METHOD_THEORY.md             Mathematical theory & thermodynamic formulas
+    |-- PARAMETERS.md                Mass, inertia, and dimensional parameters
+    |-- CASE_TREE.md                 Hierarchical breakdown of load cases
+    |-- ADD_BASE_GEOMETRY_CHECKLIST.md
+    |-- FILE_AUDIT.md
+    |-- OFFICIAL_DOC_REFERENCES.md
     `-- media/
         |-- images/                  figures used in this README
-        `-- videos/                  simulation animations 
+        `-- videos/                  simulation animations (.gif)
 ```
 
 ## Baseline case
