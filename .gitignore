@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env/
+.ipynb_checkpoints/
+
+# MATLAB / Simulink
+*.asv
+*.slxc
+slprj/
+*.autosave
+*.mexa64
+*.mexw64
+*.mexmaci64
+
+# WEC-Sim run artifacts
+output/
+results/
+*.mat
+!docs/**/*.mat
+*.fig
+!docs/**/*.fig
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
