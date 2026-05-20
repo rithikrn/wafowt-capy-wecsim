@@ -347,13 +347,6 @@ call and saves:
 - PTO power plots per chamber (hollow case);
 - optional 3D Simscape Mechanics Explorer animation (toggle via
   `saveAnimation`).
-
-![Simulink layouts](docs/media/thesis_placeholders/fig_2_08_wecsim_layout_page.png)
-*WEC-Sim Simulink layouts: (left) baseline (no-OWC); (right) hollow OWC
-case with platform shell plus three OWC piston bodies.*
-
-Example simulation animations are in `docs/media/videos/`.
-
 ---
 
 ## 5. Theory summary
@@ -478,6 +471,7 @@ recommended for any quantitative comparison [3].
 
 ## 7. Verification
 ![WEC-Sim Regular Wave Simulation](docs/media/videos/fowt_regwave_matlab.gif)
+
 *Visual verification: Time-domain regular wave simulation of the OWC-integrated platform in WEC-Sim.*
 
 Heave natural period of the baseline case compared with published OC4 results:
