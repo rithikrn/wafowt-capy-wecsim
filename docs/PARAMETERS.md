@@ -19,7 +19,7 @@
 | Baseline heave restoring proxy | 3,745,330 N/m |
 | Baseline inertia vector | `[1.3813e10, 1.3813e10, 1.2287e10]` kg m² |
 
-## 4 m hollow OWC case
+## Hollow case
 
 | Parameter | Value |
 |---|---:|
@@ -30,11 +30,3 @@
 | Hollow heave restoring proxy | 3,366,256 N/m |
 | Default orifice diameter | 2.0 m |
 
-## Passive-orifice sweep
-
-| Orifice diameter | Area ratio Λ = A_col/A_orifice |
-|---:|---:|
-| 0.25 m | 256 |
-| 0.50 m | 64 |
-| 1.00 m | 16 |
-| 2.00 m | 4 |
