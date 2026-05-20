@@ -25,13 +25,9 @@ The WEC-Sim equation-of-motion structure is assembled from the HDF5 hydrodynamic
 - regular-wave response,
 - PM irregular-wave response.
 
-## OWC piston representation
-
-The hollow OWC case treats each internal water surface as a piston-like body. The three translational PTOs approximate the combined restoring and damping effect of the water column and passive pneumatic restriction. The parameter `orificeDiameter` controls the linearized passive restriction proxy in the WEC-Sim input file.
-
 ## Interpreting results
 
 - Free decay: extract natural period and damping from response peaks.
 - Regular waves: compare steady-state peak or peak-to-peak response at one wave period.
 - Irregular waves: use the same phase seed across cases for fair deterministic case ranking.
-- OWC sweep: compare motion reduction, force/moment response, and pneumatic power trends; avoid interpreting one fixed passive restriction as universally optimal.
+- OWC sweep: compare motion reduction, force/moment response, and pneumatic power trends.
