@@ -83,7 +83,7 @@ wafowt-capy-wecsim/
 ```
 
 The pipeline order is recoverable from the folder names. Each folder
-is one stage. Check ![CASE_TREE.md](docs/CASE_TREE.md) for detailed case tree with description
+is one stage. Check [CASE_TREE.md](docs/CASE_TREE.md) for detailed case tree with description
 
 ---
 
