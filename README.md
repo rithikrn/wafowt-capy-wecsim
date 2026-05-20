@@ -24,8 +24,8 @@ one set of Python helpers:
 
 | Case   | Description                                | Bodies | DOF | Hydro data    | Simulink model        |
 | :----- | :----------------------------------------- | :----: | :-: | :------------ | :-------------------- |
-| base   | Solid OC4 baseline (no OWC)                |   1    |  6  | `base.h5`     | `wafowt_base.slx`     |
-| hollow | OC4 with three offset-column OWC chambers  |   4    |  9  | `hollow.h5`   | `wafowt_hollow.slx`   |
+| base   | Solid OC4 baseline (no OWC)                |   1    |  6  | `base.h5`     | `base.slx`     |
+| hollow | OC4 with three offset-column OWC chambers  |   4    |  9  | `hollow.h5`   | `hollow.slx`   |
 
 ---
 
@@ -76,8 +76,8 @@ wafowt-capy-wecsim/
 |-- wecsim/                          
 |   |-- wecSimInputFile.m            
 |   |-- userDefinedFunctions.m       
-|   |-- wafowt_base.slx              
-|   `-- wafowt_hollow.slx            
+|   |-- base.slx              
+|   `-- hollow.slx            
 |
 `-- docs/ 
 ```
@@ -322,11 +322,11 @@ bodies.
 caseType = 'hollow';     % 'base' or 'hollow'
 ```
 
-When `caseType = 'base'`, the input file loads `wafowt_base.slx`,
+When `caseType = 'base'`, the input file loads `base.slx`,
 declares one body backed by `../hydroData/base/base.h5`, sets the
 baseline mooring stiffness, and skips PTO setup entirely.
 
-When `caseType = 'hollow'`, the input file loads `wafowt_hollow.slx`,
+When `caseType = 'hollow'`, the input file loads `hollow.slx`,
 declares one platform body and three OWC piston bodies backed by
 `../hydroData/hollow/hollow.h5`, sets `simu.b2b = 1` for the multi-body
 coupling, sets the hollow mooring stiffness, and defines three
@@ -508,8 +508,8 @@ semisubmersible:
 4. **Update mass, inertia, mooring stiffness, mooring pre-tension, and
    PTO locations** in `wecsim/wecSimInputFile.m` (all lines marked
    with `REPLACE` comments).
-5. **Rebuild the Simulink models** `wafowt_base.slx` and
-   `wafowt_hollow.slx` from the WEC-Sim library if your body count or
+5. **Rebuild the Simulink models** `base.slx` and
+   `hollow.slx` from the WEC-Sim library if your body count or
    PTO count differs.
 6. **Re-run the pipeline**: `wafowt_capy_*.py`, then `bemio_*.m`, then
    `wecSim`.
@@ -520,8 +520,8 @@ semisubmersible:
 
 1. **Base vs hollow are not interchangeable.** The base case has 6
    DOFs (1 body); the hollow case has 9 DOFs (4 bodies). Always pair
-   `base.h5` with `wafowt_base.slx` and `hollow.h5` with
-   `wafowt_hollow.slx`.
+   `base.h5` with `base.slx` and `hollow.h5` with
+   `hollow.slx`.
 
 2. **Body order must match between Capytaine and WEC-Sim.** For the
    hollow case the order is `1 = shell, 2 = front piston, 3 = rear-port
