@@ -2,7 +2,7 @@
 
 An open-source, end-to-end, reproducible workflow for the reduced-order
 hydrodynamic modelling of an oscillating-water-column (OWC) integrated
-floating offshore wind turbine (FOWT) platform built on the NREL OC4
+floating offshore wind turbine (FOWT) platform built on the NLR OC4
 DeepCwind semisubmersible. The same workflow applies, with replaced
 geometry and mass values, to any semisubmersible platform.
 
@@ -236,8 +236,8 @@ wecsim/results/figures/<caseType>/<seaState>/
 
 ### 4.1 Stage 1 -- Geometry and mass properties
 
-The host platform is the NREL OC4 DeepCwind semisubmersible [6]
-supporting the NREL 5 MW reference wind turbine [7]. Both cases share
+The host platform is the NLR OC4 DeepCwind semisubmersible [6]
+supporting the NLR 5 MW reference wind turbine [7]. Both cases share
 the OC4 reference. The hollow variant replaces each of the three
 offset columns with a vertical chamber open to the sea at the bottom and
 capped by a trapped air volume at the top.
@@ -488,10 +488,10 @@ results:
 | OC5 phase II multi-code range [16]              | 17.0 - 17.8    | multi-code                        |
 | **This workflow** (Capytaine + BEMIO + WEC-Sim) | **17.96**      | linearised mooring, base case     |
 
-A 2.6 % agreement with the NREL reference and 0.9 % with the
+A 2.6 % agreement with the NLR reference and 0.9 % with the
 experimental value is typical for linear potential-flow models with a
 simplified mooring proxy. Capytaine added mass, radiation damping, and
-excitation magnitudes agree with the NREL OC4 reference data [6] to
+excitation magnitudes agree with the NLR OC4 reference data [6] to
 within 2.5 %; residual differences are attributable to pontoon omission
 and finite mesh resolution.
 
@@ -584,12 +584,12 @@ https://capytaine.org/stable/user_manual/installation.html.
 
 [6] A. Robertson, J. Jonkman, M. Masciola, H. Song, A. Goupee, A.
 Coulling, and C. Luan, "Definition of the Semisubmersible Floating
-System for Phase II of OC4," NREL Technical Report NREL/TP-5000-60601,
-2014. https://www.nrel.gov/docs/fy14osti/60601.pdf.
+System for Phase II of OC4," NLR Technical Report NLR/TP-5000-60601,
+2014. https://www.NLR.gov/docs/fy14osti/60601.pdf.
 
 [7] J. Jonkman, S. Butterfield, W. Musial, and G. Scott, "Definition of
-a 5-MW Reference Wind Turbine for Offshore System Development," NREL
-Technical Report NREL/TP-500-38060, 2009.
+a 5-MW Reference Wind Turbine for Offshore System Development," NLR
+Technical Report NLR/TP-500-38060, 2009.
 
 [8] WEC-Sim Team, "Code Structure." In *WEC-Sim User Manual*.
 https://wec-sim.github.io/WEC-Sim/dev/user/code_structure.html.
