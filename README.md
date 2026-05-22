@@ -250,7 +250,7 @@ Both drivers expose command-line overrides; use `--help` for the list.
 
 ![Platform mesh with OWC](docs/media/images/capy_mesh.png)
 
-*Platform mesh of the platform with OWC chambers modelled at each offset column*
+*Platform mesh with OWC chambers modelled at each offset column*
 
 ![Capytaine wetted mesh with lid](docs/media/images/screenshot.png)
 
