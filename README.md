@@ -591,7 +591,7 @@ Procedia*, vol. 137, pp. 38-57, 2017.
 
 If you use this workflow in academic work, please cite the three primary
 tool publications -- Capytaine [1], WEC-Sim [3], and the OC4 reference
-geometry [6] -- together with the repository itself:
+geometry [6] -- together with the repository itself and masters thesis:
 
 ```bibtex
 @software{wafowt_capy_wecsim,
@@ -602,7 +602,15 @@ geometry [6] -- together with the repository itself:
   url     = {https://github.com/rithikrn/wafowt-capy-wecsim},
 }
 ```
-
+```bibtex
+@mastersthesis{nambiar2026modeling,
+  title={Modeling and Analysis of an OWC-Integrated Floating Offshore Wind Turbine Platform},
+  author={Nambiar, Rithik Ramachandran},
+  year={2026},
+  school={Iowa State University}
+}
+```
+Note: Any future peer-reviewed papers and journal articles published regarding this workflow will be added to this section.
 ---
 
 ## 12. License
