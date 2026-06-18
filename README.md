@@ -593,6 +593,8 @@ If you use this workflow in academic work, please cite the three primary
 tool publications -- Capytaine [1], WEC-Sim [3], and the OC4 reference
 geometry [6] -- together with the repository itself and masters thesis:
 
+Note: Any future peer-reviewed papers and journal articles published regarding this workflow will be added to this section.
+
 ```bibtex
 @software{wafowt_capy_wecsim,
   author  = {Rithik R Nambiar},
@@ -610,7 +612,7 @@ geometry [6] -- together with the repository itself and masters thesis:
   school={Iowa State University}
 }
 ```
-Note: Any future peer-reviewed papers and journal articles published regarding this workflow will be added to this section.
+
 ---
 
 ## 12. License
