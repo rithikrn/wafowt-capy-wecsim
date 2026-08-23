@@ -596,12 +596,15 @@ geometry [6] -- together with the repository itself and masters thesis:
 Note: Any future peer-reviewed papers and journal articles published regarding this workflow will be added to this section.
 
 ```bibtex
-@software{wafowt_capy_wecsim,
-  author  = {Rithik R Nambiar},
-  title   = {{WAFOWT-CAPY-WECSIM}: Open-source Capytaine + BEMIO + WEC-Sim
-             workflow for an OWC-integrated OC4 DeepCwind semisubmersible},
-  year    = 2026,
-  url     = {https://github.com/rithikrn/wafowt-capy-wecsim},
+@software{Nambiar_wafowt-capy-wecsim_2026,
+author = {Nambiar, Rithik R},
+doi = {10.5281/zenodo.22065465},
+license = {["mit"]},
+month = aug,
+title = {{wafowt-capy-wecsim}},
+url = {https://github.com/rithikrn/wafowt-capy-wecsim/tree/v1.1},
+version = {v1.1},
+year = {2026}
 }
 ```
 ```bibtex
