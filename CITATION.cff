@@ -1,0 +1,15 @@
+title: "wafowt-capy-wecsim: An open-source, end-to-end, reproducible workflow for the reduced-order hydrodynamic modelling of an oscillating-water-column (OWC) integrated floating offshore wind turbine (FOWT) platform."
+authors:
+- family-names: Nambiar
+  given-names: Rithik R
+  orcid: "https://orcid.org/0009-0002-9722-5136"
+cff-version: 1.1.0
+date-released: '2026-08-23'
+doi: 10.5281/zenodo.22065465
+license:
+- mit
+message: If you use this software, please cite it using the metadata from this file.
+repository-code: https://github.com/rithikrn/wafowt-capy-wecsim/tree/v1.1
+title: wafowt-capy-wecsim
+type: software
+version: v1.1
